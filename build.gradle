@@ -81,8 +81,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 cordapp {
     info {
-        name "CorDapp Template"
-        vendor "Corda Open Source"
+        name "Countdown CorDapp"
+        vendor "RGB"
         targetPlatformVersion 4
         minimumPlatformVersion 4
     }

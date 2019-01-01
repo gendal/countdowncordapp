@@ -22,8 +22,14 @@ class FlowTests {
         network = MockNetwork(MockNetworkParameters(cordappsForAllNodes = cordappsForPackages("com.r3.gendal.contracts", "com.r3.gendal.flows")))
         a = network.createPartyNode()
         b = network.createPartyNode()
-        // For real nodes this happens automatically, but we have to manually register the flow for tests.
-        listOf(a, b).forEach { it.registerInitiatedFlow(Responder::class.java) }
+
+        /*
+            TODO: Check if this is needed... I get a warning when it's included
+
+                // For real nodes this happens automatically, but we have to manually register the flow for tests.
+                // listOf(a, b).forEach { it.registerInitiatedFlow(Responder::class.java) }
+        */
+
         network.runNetwork()
     }
 
@@ -31,15 +37,11 @@ class FlowTests {
     fun tearDown() = network.stopNodes()
 
     @Test
-    fun `dummy test`() {
+    fun `drive simple test`() {
         val flow = ProposeChallenge(555, listOf(1,2, 3, 4, 75, 100), b.info.singleIdentity())
-
         val future = a.startFlow(flow)
-
         network.runNetwork()
-
         val result = future.getOrThrow()
-
-        println("Completed?")
+        println("Completed: ${result}")
     }
 }
