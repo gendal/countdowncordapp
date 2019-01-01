@@ -4,7 +4,6 @@ import net.corda.core.serialization.CordaSerializable
 import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 import kotlin.math.abs
-import kotlin.math.exp
 
 // A simple (brute-force) program to solve the Countdown Numbers Game,
 // explained eg here: http://datagenetics.com/blog/august32014/index.html
@@ -12,8 +11,8 @@ import kotlin.math.exp
 fun main(args: Array<String>) {
     val (target, numbers)= determineNumbersAndTarget(args)
 
-    print("The numbers are: ${numbers}")
-    println("\nTarget: ${target}\n")
+    println("The numbers are: ${numbers}")
+    println("Target: ${target}\n")
 
     // Generate all orderings of the numbers
     // Note: this only generates lists of length n (typically 6)
@@ -219,7 +218,7 @@ private fun determineNumbersAndTarget(args: Array<String>): Pair<Int, List<Int>>
         println("Could not parse target (${args[0]}). Selecting random target instead")
     }
     var random = false
-    var workingNumbers = ArrayList<Int>()
+    val workingNumbers = ArrayList<Int>()
     for (i in 1 until args.size) {
         val temp = args[i].toIntOrNull()
         if (temp == null) {

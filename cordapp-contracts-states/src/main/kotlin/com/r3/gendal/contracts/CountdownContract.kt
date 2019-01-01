@@ -1,23 +1,16 @@
 package com.r3.gendal.contracts
 
-import com.r3.gendal.com.r3.gendal.gamelogic.Number
 import com.r3.gendal.states.CountdownState
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.requireThat
 import net.corda.core.transactions.LedgerTransaction
 
-// ************
-// * Contract *
-// ************
 class CountdownContract: Contract {
     companion object {
-        // Used to identify our contract when building a transaction.
         const val ID = "com.r3.gendal.contracts.CountdownContract"
     }
 
-    // A transaction is valid if the verify() function of the contract of all the transaction's input and output states
-    // does not throw an exception.
     override fun verify(tx: LedgerTransaction) {
 
         val command = tx.commands.single()
@@ -27,7 +20,7 @@ class CountdownContract: Contract {
 
         when (command.value) {
             is Commands.Challenge -> {
-                // Must be just one input
+                // Must be just one CountdownState
                 // The values must be valid per rules of Countdown
                 if (inputs.size != 0) throw IllegalStateException("there must be no input for a challenge")
                 if (outputs.size != 1) throw IllegalStateException("there must be precisely one output for a challenge")
@@ -52,7 +45,7 @@ class CountdownContract: Contract {
                 requireThat {
                     "the key details must not have switched from challenge to solution" using
                             (inputs[0].target == outputs[0].target && inputs[0].numberTiles == outputs[0].numberTiles)
-                                    // TODO check the equals() operator works the way I hope it does)
+                                    // TODO check the equals() operator works the way I hope it does
                     "the proposed solution must evaluate to the target" using
                             (outputs[0].proposedSolution.evaluate() == outputs[0].target)
                     "the problem must be marked as solved" using
