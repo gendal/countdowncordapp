@@ -16,5 +16,9 @@ fun main(args: Array<String>) {
     driver(DriverParameters(startNodesInProcess = true, waitForAllNodesToFinish = true)) {
         startNode(providedName = CordaX500Name("PartyA", "London", "GB"), rpcUsers = rpcUsers).getOrThrow()
         startNode(providedName = CordaX500Name("PartyB", "New York", "US"), rpcUsers = rpcUsers).getOrThrow()
+
+
+        //initiator = mockNetwork.createNode(MockNodeParameters(legalName = CordaX500Name("initiator", "Reading", "GB")))
+        //responder = mockNetwork.createNode(MockNodeParameters(legalName = CordaX500Name("responder", "Reading", "GB")))
     }
 }
