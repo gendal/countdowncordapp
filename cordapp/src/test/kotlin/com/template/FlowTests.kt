@@ -27,8 +27,10 @@ class FlowTests {
             TODO: Check if this is needed... I get a warning when it's included
 
                 // For real nodes this happens automatically, but we have to manually register the flow for tests.
-                // listOf(a, b).forEach { it.registerInitiatedFlow(Responder::class.java) }
+
         */
+
+        //listOf(a, b).forEach { it.registerInitiatedFlow(Responder::class.java) }
 
         network.runNetwork()
     }

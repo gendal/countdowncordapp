@@ -57,6 +57,10 @@ class ProposeChallenge(val target: Int,
 
         println("Result from responder: ${result}")
 
+        otherPartyFlow.send(5)
+        for (i in 1..5)
+            otherPartyFlow.send("$i")
+
         return result
 
     }
@@ -79,6 +83,14 @@ class Responder(val counterpartySession: FlowSession) : FlowLogic<String>() {
 
         // TODO: Verify that the proposal is correct and sign
         counterpartySession.send("Game state OK")
+
+        val count = counterpartySession.receive<Int>().unwrap { count -> count }
+        println("I am informed I am to receive ${count} more messages")
+        for (i in 1 .. count) {
+            println("Waiting to receive item ${i}")
+            counterpartySession.receive<Any>()
+        }
+
 
         return("Game state acknowledgement sent by response to initiator. Responder ending.")
 
