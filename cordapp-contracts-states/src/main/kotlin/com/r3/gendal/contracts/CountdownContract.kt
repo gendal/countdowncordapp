@@ -3,6 +3,7 @@ package com.r3.gendal.contracts
 import com.r3.gendal.states.CountdownState
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
+import net.corda.core.contracts.TypeOnlyCommandData
 import net.corda.core.contracts.requireThat
 import net.corda.core.transactions.LedgerTransaction
 
@@ -13,15 +14,14 @@ class CountdownContract: Contract {
 
     override fun verify(tx: LedgerTransaction) {
 
-        val command = tx.commands.single()
+        val command = tx.commands.single()  // TODO: Relax this so it only insists on one CountdownContract Command
 
         val inputs = tx.inputsOfType(CountdownState::class.java)
         val outputs = tx.outputsOfType(CountdownState::class.java)
 
         when (command.value) {
             is Commands.Challenge -> {
-                // Must be just one CountdownState
-                // The values must be valid per rules of Countdown
+
                 if (inputs.size != 0) throw IllegalStateException("there must be no input for a challenge")
                 if (outputs.size != 1) throw IllegalStateException("there must be precisely one output for a challenge")
 
@@ -32,7 +32,8 @@ class CountdownContract: Contract {
                             (outputs[0].target>=100 && outputs[0].target<1000)
                     // TODO
                     //
-                    // Check numbers drawn (with no replacement) from set 1 1 2 2 3 3 4 4 5 5 6 6 25 50 75 100
+                    //  Check numbers drawn (with no replacement) from set 1 1 2 2 3 3 ... 9 9 10 10 25 50 75 100
+                    //  Check commands are requiring the right signatures
 
                 }
             }
@@ -50,10 +51,15 @@ class CountdownContract: Contract {
                             (outputs[0].proposedSolution.evaluate() == outputs[0].target)
                     "the problem must be marked as solved" using
                             (outputs[0].gameSolved)
+
+                    // TODO
+                    //
+                    //  Check commands are requiring the right signatures
                 }
             }
 
             else -> throw IllegalArgumentException("command must be 'Challenge' or 'Solution'")
+
         }
 
     }
