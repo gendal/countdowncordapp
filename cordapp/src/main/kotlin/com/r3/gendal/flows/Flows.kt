@@ -24,58 +24,26 @@ class ProposeChallenge(val target: Int,
     override fun call(): SignedTransaction {
         println("Propose Challenge Flow initiated with target: ${target}, gameTiles: ${gameTiles}, otherParty: ${otherParty}")
 
-
         val gameState: CountdownState = CountdownState(target, gameTiles, Number(0), false)
-
         val txCommand = Command(CountdownContract.Commands.Challenge(), listOf(serviceHub.myInfo.legalIdentities[0].owningKey, otherParty.owningKey))
-
         val notary: Party = serviceHub.networkMapCache.notaryIdentities[0]
-
         val txBuilder = TransactionBuilder(notary)
                 .addOutputState(gameState, CountdownContract.ID)
                 .addCommand(txCommand)
-
         txBuilder.verify(serviceHub)
-
         val partSignedTx = serviceHub.signInitialTransaction(txBuilder)
-
         val otherPartyFlow = initiateFlow(otherParty)
-
         val fullySignedTx = subFlow(CollectSignaturesFlow(partSignedTx, setOf(otherPartyFlow)))
-
         val finalisedTx = subFlow(FinalityFlow(fullySignedTx, setOf(otherPartyFlow)))
-
         return finalisedTx
-
-
-        /*
-        val resultUnsafe: UntrustworthyData<String> = otherPartyFlow.sendAndReceive<String>(gameState)
-        val result = resultUnsafe.unwrap { data ->
-
-            // TODO: Validate properly
-
-            data
-        }
-
-        println("Result from responder: ${result}")
-
-        otherPartyFlow.send(5)
-        for (i in 1..5)
-            otherPartyFlow.send("$i")
-
-        return result
-
-    }
-    */
-
     }
 }
 
 @InitiatedBy(ProposeChallenge::class)
-class Responder(val counterpartySession: FlowSession) : FlowLogic<SignedTransaction>() {
+class ChallengeResponder(val counterpartySession: FlowSession) : FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
-        println("Responder flow started")
+        println("Challenge Responder flow started")
 
         val signTransactionFlow = object : SignTransactionFlow(counterpartySession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
@@ -87,13 +55,10 @@ class Responder(val counterpartySession: FlowSession) : FlowLogic<SignedTransact
         }
 
         val txId = subFlow(signTransactionFlow).id
-
         val finalisedTx = subFlow(ReceiveFinalityFlow(counterpartySession, expectedTxId = txId))
-
         println("Finalised transaction returned")
 
         return finalisedTx
 
     }
 }
-
